@@ -105,7 +105,6 @@ function getAvatarColor(messageSender) {
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
     }
-
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
