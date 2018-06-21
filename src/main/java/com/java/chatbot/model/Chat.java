@@ -1,5 +1,6 @@
 package com.java.chatbot.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ public class Chat {
     private String datetime;
     private String sender;
     private String content;
+    private ArrayList<String> keywords = new ArrayList<String>();
     private transient List<Conversation> conversation;
     
     public enum MessageType {
@@ -69,5 +71,13 @@ public class Chat {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public ArrayList<String> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(ArrayList<String> keywords) {
+		this.keywords = keywords;
 	}
 }

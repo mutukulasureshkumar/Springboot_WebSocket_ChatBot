@@ -11,6 +11,7 @@ var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
 var username = null;
 var chatId = null;
+var keywordsList=null;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -92,13 +93,43 @@ function onMessageReceived(payload) {
     var textElement = document.createElement('p');
     var messageText = document.createTextNode(message.content);
     textElement.appendChild(messageText);
-
+    
     messageElement.appendChild(textElement);
+    
+	if(message.keywords != null){
+		keywordsList = message.keywords;
+		var buttonElement = document.createElement('p');
+		for (var i = 0; i < message.keywords.length; i++) {
+			var button = document.createElement("button");
+	    	button.innerHTML = message.keywords[i];
+	    	button.setAttribute('class','button button2') ;
+	    	button.setAttribute('onclick','press(this.innerHTML)') ;
+	    	buttonElement.appendChild(button);
+	    	messageElement.appendChild(buttonElement);
+		}
+	}
 
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
+function press(innerhtml){
+	 if(stompClient) {
+	        var chatMessage = {
+	            sender: username,
+	            content: innerhtml,
+	            type: 'CHAT',
+	            chatId: chatId
+	        };
+	        stompClient.send("/app/chat.conversation", {}, JSON.stringify(chatMessage));
+	    }
+}
+
+function hasClass(elem, className) {
+	alert(ele);
+	alert(className)
+    return elem.className.split(' ').indexOf(className) > -1;
+}
 
 function getAvatarColor(messageSender) {
     var hash = 0;

@@ -49,7 +49,7 @@ public class ChatService {
 		ArrayList<Relations> relationsList = null;
 		try {
 			relationsList = relationsRepossitory.findByParentNodeId(1);
-			chat.setContent(buildWelcomeMessgae(chat.getSender(), relationsList));
+			chat.setContent(buildWelcomeMessgae(chat, relationsList));
 		} catch (NullPointerException e) {
 			chat.setContent(
 					"Looks like Admin is not ready for any suggessions!! Please enter your query, our team will get back to you. Thanks.");
@@ -68,32 +68,38 @@ public class ChatService {
 						"Looks like you are asking which is out of my context. Please select any product which i mentioned above. Thanks. ");
 			} else {
 				ArrayList<Relations> relationsList = relationsRepossitory.findByParentNodeId(node.getId());
-				chat.setContent(buildContinuationMessgae(chat.getSender(), relationsList, chat.getContent()));
+				if(!relationsList.isEmpty()) {
+					chat.setContent(buildContinuationMessgae(chat, relationsList));
+				}
 			}
 		}
 		chat.setSender(chatBotName);
 		template.convertAndSend("/topic/private/"+chat.getChatId(), chat);
 	}
 	
-	public String buildWelcomeMessgae(String senderName, ArrayList<Relations> relationsList) {
+	public String buildWelcomeMessgae(Chat chat, ArrayList<Relations> relationsList) {
 		String welcomeMessage = relationsList.get(0).getVocabulary().getMessage();
-		welcomeMessage = welcomeMessage.replace(NAME_PLACEHOLDER, senderName);
-		welcomeMessage = welcomeMessage.replace(RELATIONS_PLACEHOLDER, formatRelations(relationsList));
+		welcomeMessage = welcomeMessage.replace(NAME_PLACEHOLDER, chat.getSender());
+		welcomeMessage = welcomeMessage.replace(RELATIONS_PLACEHOLDER, formatRelations(chat, relationsList));
 		return welcomeMessage;
 	}
 	
-	public String buildContinuationMessgae(String senderName, ArrayList<Relations> relationsList, String node) {
+	public String buildContinuationMessgae(Chat chat, ArrayList<Relations> relationsList) {
 		String contMessage = relationsList.get(0).getVocabulary().getMessage();
-		contMessage = contMessage.replace(NAME_PLACEHOLDER, senderName);
-		contMessage = contMessage.replace(RELATIONS_PLACEHOLDER, formatRelations(relationsList));
-		contMessage = contMessage.replace(NODE_PLACEHOLDER, node);
+		contMessage = contMessage.replace(NAME_PLACEHOLDER, chat.getSender());
+		contMessage = contMessage.replace(RELATIONS_PLACEHOLDER, formatRelations(chat, relationsList));
+		contMessage = contMessage.replace(NODE_PLACEHOLDER, chat.getContent());
 		return contMessage;
 	}
 	
-	public String formatRelations(ArrayList<Relations> relationsList) {
+	public String formatRelations(Chat chat, ArrayList<Relations> relationsList) {
 		String nodesNames="";
-		for(Relations relations:relationsList)
-			nodesNames += relations.getnodes().getNode()+",";
+		ArrayList<String> keywords = new ArrayList<String>();
+		for(Relations relations:relationsList) {
+			nodesNames += relations.getnodes().getNode()+","; 
+			keywords.add(relations.getnodes().getNode());
+		}
+		chat.setKeywords(keywords);
 		return nodesNames.substring(0, (nodesNames.length()-1));
 		//return "Movies or Events";
 	}
