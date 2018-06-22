@@ -32,7 +32,7 @@ CREATE TABLE vocabulary (
 
 INSERT INTO vocabulary (message) VALUES ("Hello <<name>>!!, How are you? This is ECLBot, What would you like to know about Apple products? \nIs that <<relations>>?"),
 ("That's interesting <<name>>!!, What would you like to know about <<node>>, is that <<relations>>?"), ("Great decission <<name>>, by the way which model <<node>> whould you like to enquire about? Is that <<relations>>"),
-("The price of <<node>> is : <<relations>>"), ("Thanks you <<name>> for contacting ECLBot. Its a wonderful chat!! would you mind giving me a rating on 1 to 5 bar?."), ("Thank you so much <<name>>, Bye");
+("The price of <<node>> is : <<relations>>"), ("Thanks you <<name>> for contacting ECLBot. Its a wonderful chat!! would you mind giving me a feedback?"), ("Thank you so much <<name>>, See you again!! Bye");
 
 ALTER TABLE relations ADD vocabulary_id int;
 
@@ -49,6 +49,10 @@ UPDATE relations SET vocabulary_id=4 WHERE parent_node_id IN (6,7,8,9,10);
 UPDATE vocabulary SET message="Hello <<name>>!!, How are you? This is ECLBot, I will help you to know the Apple products price. Which Apple product price you want to get to know? Is that <<relations>>?" WHERE id=1;
 
 UPDATE vocabulary SET message="That's interesting <<name>>!! which series <<node>> are you looking for? is that <<relations>>?" WHERE id=2;
+
+UPDATE vocabulary SET message="Thanks you <<name>> for contacting ECLBot. Its a wonderful chat!! would you mind giving me a feedback?" WHERE id=5;
+UPDATE vocabulary SET message="Thank you so much <<name>>, See you again!! Bye." WHERE id=6;
+
 
 INSERT INTO nodes (node) VALUES ('7S' ), ('7S Plus');
 
