@@ -13,6 +13,7 @@ import com.java.chatbot.model.Nodes;
 import com.java.chatbot.model.Relations;
 import com.java.chatbot.repository.NodesRepossitory;
 import com.java.chatbot.repository.RelationsRepossitory;
+import com.java.chatbot.repository.VocabularyRepossitory;
 
 /**
  * @author ${Suresh M Kumar}
@@ -37,6 +38,9 @@ public class ChatService {
 	@Autowired
 	private NodesRepossitory nodesRepossitory;
 	
+	@Autowired
+	private VocabularyRepossitory vocabularyRepossitory;
+	
 	private static final String NAME_PLACEHOLDER="<<name>>"; 
 	private static final String RELATIONS_PLACEHOLDER="<<relations>>"; 
 	private static final String NODE_PLACEHOLDER="<<node>>"; 
@@ -60,16 +64,22 @@ public class ChatService {
 	}
 	public void sendMessage(Chat chat) {
 		if(chat.getContent() == null || chat.getContent().trim().length()==0) {
-			chat.setChatId("looking like you are not entering valid question, Please type your question my friend.");
+			chat.setContent("looking like you are not entering valid question, Please type your question my friend.");
 		} else {
-			Nodes node = nodesRepossitory.findByNode(chat.getContent());
-			if (node == null) {
-				chat.setContent(
-						"Looks like you are asking which is out of my context. Please select any product which i mentioned above. Thanks. ");
-			} else {
-				ArrayList<Relations> relationsList = relationsRepossitory.findByParentNodeId(node.getId());
-				if(!relationsList.isEmpty()) {
-					chat.setContent(buildContinuationMessgae(chat, relationsList));
+			if(chat.isEndCoversation()) {
+				String content = vocabularyRepossitory.findById(6).getMessage();
+				content = content.replace(NAME_PLACEHOLDER, chat.getSender());
+				chat.setContent(content);
+			}else {
+				Nodes node = nodesRepossitory.findByNode(chat.getContent());
+				if (node == null) {
+					chat.setContent(
+							"Looks like you are asking which is out of my context. Please select any product which i mentioned above. Thanks. ");
+				} else {
+					ArrayList<Relations> relationsList = relationsRepossitory.findByParentNodeId(node.getId());
+					if(!relationsList.isEmpty()) {
+						chat.setContent(buildContinuationMessgae(chat, relationsList));
+					}
 				}
 			}
 		}
@@ -86,9 +96,13 @@ public class ChatService {
 	
 	public String buildContinuationMessgae(Chat chat, ArrayList<Relations> relationsList) {
 		String contMessage = relationsList.get(0).getVocabulary().getMessage();
-		contMessage = contMessage.replace(NAME_PLACEHOLDER, chat.getSender());
 		contMessage = contMessage.replace(RELATIONS_PLACEHOLDER, formatRelations(chat, relationsList));
+		if(chat.isEndCoversation()) {
+			contMessage = contMessage+". \n\t "+vocabularyRepossitory.findById(5).getMessage();
+		}
+		contMessage = contMessage.replaceAll(NAME_PLACEHOLDER, chat.getSender());
 		contMessage = contMessage.replace(NODE_PLACEHOLDER, chat.getContent());
+
 		return contMessage;
 	}
 	
@@ -98,6 +112,10 @@ public class ChatService {
 		for(Relations relations:relationsList) {
 			nodesNames += relations.getnodes().getNode()+","; 
 			keywords.add(relations.getnodes().getNode());
+			if(relations.getHadNextRelations() == 0)
+				chat.setEndCoversation(true);
+			else
+				chat.setEndCoversation(false);
 		}
 		chat.setKeywords(keywords);
 		return nodesNames.substring(0, (nodesNames.length()-1));

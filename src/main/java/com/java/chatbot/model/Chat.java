@@ -18,8 +18,17 @@ public class Chat {
     private String content;
     private ArrayList<String> keywords = new ArrayList<String>();
     private transient List<Conversation> conversation;
+    private boolean EndCoversation;
     
-    public enum MessageType {
+    public boolean isEndCoversation() {
+		return EndCoversation;
+	}
+
+	public void setEndCoversation(boolean endCoversation) {
+		EndCoversation = endCoversation;
+	}
+
+	public enum MessageType {
         CHAT,
         JOIN,
         LEAVE

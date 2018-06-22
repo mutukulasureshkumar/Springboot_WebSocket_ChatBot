@@ -1,0 +1,9 @@
+applications:
+  - name: chatbot_V0.1
+    path: target/chatbot-0.0.1-SNAPSHOT.jar
+    memory: 1G
+    env:
+      JAVA_OPTS: -Djava.security.egd=file:/dev/./urandom
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - chatbot

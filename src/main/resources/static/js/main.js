@@ -11,7 +11,7 @@ var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
 var username = null;
 var chatId = null;
-var keywordsList=null;
+var EOM=false;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -23,6 +23,7 @@ function connect(event) {
     if(username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
+        //var socket = new SockJS('https://elibot.cfapps.io/ws');
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
         stompClient.connect({userId:username}, onConnected, onError);
@@ -40,6 +41,7 @@ function onConnected() {
             connectingElement.classList.add('hidden');
         }
     };
+    //xhttp.open("GET", "https://elibot.cfapps.io/getChatId", true);
     xhttp.open("GET", "http://localhost:9090/getChatId", true);
     xhttp.send();
 }
@@ -56,7 +58,8 @@ function sendMessage(event) {
             sender: username,
             content: messageInput.value,
             type: 'CHAT',
-            chatId: chatId
+            chatId: chatId,
+            endCoversation: EOM
         };
         stompClient.send("/app/chat.conversation", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
@@ -65,6 +68,7 @@ function sendMessage(event) {
 }
 
 function onMessageReceived(payload) {
+	
     var message = JSON.parse(payload.body);
     var messageElement = document.createElement('li');
 
@@ -97,12 +101,17 @@ function onMessageReceived(payload) {
     messageElement.appendChild(textElement);
     
 	if(message.keywords != null){
-		keywordsList = message.keywords;
 		var buttonElement = document.createElement('p');
 		for (var i = 0; i < message.keywords.length; i++) {
 			var button = document.createElement("button");
 	    	button.innerHTML = message.keywords[i];
-	    	button.setAttribute('class','button button2') ;
+	    	if(message.endCoversation == true || message.endCoversation == 'true'){
+	    		button.setAttribute('class','button disabled') ;
+	    		EOM=true;
+	    	}else{
+	    		button.setAttribute('class','button button2') ;
+	    	}
+	    	
 	    	button.setAttribute('onclick','press(this.innerHTML)') ;
 	    	buttonElement.appendChild(button);
 	    	messageElement.appendChild(buttonElement);

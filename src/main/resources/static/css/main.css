@@ -322,3 +322,8 @@ button.accent {
     background-color: #008CBA;
     color: white;
 }
+
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

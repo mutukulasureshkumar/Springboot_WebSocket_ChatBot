@@ -28,6 +28,7 @@ public class Relations {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "vocabulary_id")
 	private Vocabulary vocabulary;
+	private int hadNextRelations;
 	
 	public Relations() {}
 	
@@ -56,6 +57,14 @@ public class Relations {
 
 	public void setVocabulary(Vocabulary vocabulary) {
 		this.vocabulary = vocabulary;
+	}
+
+	public int getHadNextRelations() {
+		return hadNextRelations;
+	}
+
+	public void setHadNextRelations(int hadNextRelations) {
+		this.hadNextRelations = hadNextRelations;
 	}
 
 }

@@ -57,3 +57,9 @@ INSERT INTO relations (parent_node_id, child_node_id) VALUES (5,16), (5,17);
 UPDATE relations SET vocabulary_id=3 WHERE parent_node_id IN (5);
 
 INSERT INTO relations (parent_node_id, child_node_id, vocabulary_id) VALUES (16,12,4), (17,13,4);
+
+ALTER TABLE relations ADD had_next_relations int;
+
+UPDATE relations SET had_next_relations=1 WHERE child_node_id IN (2,3,4,5,6,7,8,9,10,16,17);
+
+UPDATE relations SET had_next_relations=0 WHERE child_node_id IN (11,12,13,14,15);
