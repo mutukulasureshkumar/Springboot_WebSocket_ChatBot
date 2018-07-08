@@ -1,5 +1,7 @@
 CREATE DATABASE chatbot;
 
+USE chatbot;
+
 CREATE TABLE nodes (
     id int NOT NULL AUTO_INCREMENT,
     node varchar(255) NOT NULL,
@@ -29,6 +31,10 @@ CREATE TABLE vocabulary (
     message TEXT NOT NULL,
     PRIMARY KEY (id)
 );
+
+UPDATE `chatbot`.`vocabulary` SET `message` = 'Hello <<name>>!! This is ECLBot, I will help you to know the Apple products price. Which Apple product price you want to get to know? Is that <<relations>>?' WHERE (`id` = '1');
+UPDATE `chatbot`.`vocabulary` SET `message` = 'Thank you so much <<name>>, See you again!!' WHERE (`id` = '6');
+
 
 INSERT INTO vocabulary (message) VALUES ("Hello <<name>>!!, How are you? This is ECLBot, What would you like to know about Apple products? \nIs that <<relations>>?"),
 ("That's interesting <<name>>!!, What would you like to know about <<node>>, is that <<relations>>?"), ("Great decission <<name>>, by the way which model <<node>> whould you like to enquire about? Is that <<relations>>"),

@@ -61,6 +61,7 @@ function sendMessage(event) {
             chatId: chatId,
             endCoversation: EOM
         };
+        EOM=false;
         stompClient.send("/app/chat.conversation", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
@@ -109,6 +110,7 @@ function onMessageReceived(payload) {
 	    		button.setAttribute('class','button disabled') ;
 	    		EOM=true;
 	    	}else{
+	    		EOM=false;
 	    		button.setAttribute('class','button button2') ;
 	    	}
 	    	
